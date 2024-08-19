@@ -8,28 +8,33 @@ for_index = nil
 against_index = nil
 header = true
 
-File.foreach(file_path) do |row|
-    columns = row.split
+header_length = nil
 
-    if header && columns.include?("Team")
-        team_index = columns.index("Team")
-        for_index = columns.index("F")
-        against_index = columns.index("A")
+File.foreach(file_path) do |rows|
+    row = rows.split
+
+    if header && row.include?("Team")
+        team_index = row.index("Team")
+        for_index = row.index("F")
+        against_index = row.index("A")
         header = false
+        header_length = row.length
         next
     end
 
     if !header
-        next unless columns[for_index] =~ /^\d+$/
-        puts "#{columns}"
+        row.delete("-")
+        next unless row[for_index] =~ /^\d+$/
+        row_diff = (header_length - row.length).abs 
+        puts "#{row}"
 
-        goal_diff = (columns[for_index].to_i - columns[against_index].to_i).abs
+        goal_diff = (row[for_index + row_diff].to_i - row[against_index + row_diff].to_i).abs
 
         if goal_diff < minimum_goal_diff
             minimum_goal_diff = goal_diff
-            minimum_team = [columns[team_index]]
+            minimum_team = [row[team_index + row_diff]]
         elsif goal_diff == minimum_goal_diff
-            minimum_team.push(columns[team_index])
+            minimum_team.push(row[team_index + row_diff])
         end
     end
 end
