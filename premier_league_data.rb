@@ -25,8 +25,7 @@ File.foreach(file_path) do |rows|
     if !header
         row.delete("-")
         next unless row[for_index] =~ /^\d+$/
-        row_diff = (header_length - row.length).abs 
-        puts "#{row}"
+        row_diff = (header_length - row.length).abs
 
         goal_diff = (row[for_index + row_diff].to_i - row[against_index + row_diff].to_i).abs
 
