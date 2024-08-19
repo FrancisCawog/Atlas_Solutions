@@ -1,18 +1,36 @@
 file_path = "soccer.dat"
 
-minimum_team = nil
+minimum_team = []
 minimum_goal_diff = Float::INFINITY
+
+team_index = nil
+for_index = nil
+against_index = nil
+header = true
 
 File.foreach(file_path) do |row|
     columns = row.split
 
-    next unless columns[9] =~ /^\d+$/
+    if header && columns.include?("Team")
+        team_index = columns.index("Team")
+        for_index = columns.index("F")
+        against_index = columns.index("A")
+        header = false
+        next
+    end
 
-    goal_diff = (columns[6].to_i - columns[8].to_i).abs
+    if !header
+        next unless columns[for_index] =~ /^\d+$/
+        puts "#{columns}"
 
-    if goal_diff < minimum_goal_diff
-        minimum_goal_diff = goal_diff
-        minimum_team = columns[1]
+        goal_diff = (columns[for_index].to_i - columns[against_index].to_i).abs
+
+        if goal_diff < minimum_goal_diff
+            minimum_goal_diff = goal_diff
+            minimum_team = [columns[team_index]]
+        elsif goal_diff == minimum_goal_diff
+            minimum_team.push(columns[team_index])
+        end
     end
 end
 
